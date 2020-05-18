@@ -108,7 +108,7 @@ public class BigNum {
         return false;
     }
 
-   protected int compareTo(BigNum a) {
+    protected int compareTo(BigNum a) {
         if (length() > a.length())
             return 1;
         if (length() < a.length())
@@ -134,7 +134,7 @@ public class BigNum {
         else return b;
     }
 
-    BigNum add(BigNum a) {
+    public BigNum add(BigNum a) {
         StringBuilder builder = new StringBuilder();
         int carrier = 0;
 
@@ -155,9 +155,9 @@ public class BigNum {
 
     }
 
-    BigNum subtract(BigNum a) {
+    public BigNum subtract(BigNum a) {
         StringBuilder builder = new StringBuilder();
-        byte[] thisdigits = digits.clone();
+        byte[] ThisDigits = digits.clone();
 
 
         if (a.isGreaterThan(this))
@@ -168,11 +168,11 @@ public class BigNum {
             for (int i = 0; i < max(length(), a.length()); i++) {
 
                 byte aDigit = i < a.length() ? a.digits[i] : 0;
-                byte thisDigit = i < length() ? thisdigits[i] : 0;
+                byte thisDigit = i < length() ? ThisDigits[i] : 0;
                 int result = thisDigit - aDigit;
                 if (thisDigit - aDigit < 0) {
                     result = thisDigit - aDigit + 10;
-                    thisdigits[i + 1]--;
+                    ThisDigits[i + 1]--;
                 }
 
 
@@ -186,7 +186,7 @@ public class BigNum {
     }
 
 
-    BigNum divideBy(BigNum a) {
+    public BigNum divideBy(BigNum a) {
         int i, counter = 0;
         StringBuilder builder = new StringBuilder();
         StringBuilder result = new StringBuilder();
@@ -225,7 +225,7 @@ public class BigNum {
                 builder.append(digits[i]);
                 counter++;
                 flag++;
-                System.out.println(counter + " " + this.length() + " " + digits[i] + " " + result + " " + builder + " " + i);
+
             }
 
             if (flag > 1) for (int j = 1; j < flag; j++) result.append("0");
@@ -241,7 +241,7 @@ public class BigNum {
     }
 
 
-    BigNum multiply(int A) {
+    public BigNum multiply(int A) {
 
         if (A == 0) return BigNum.ZERO;
         if (A == 1) return this;
@@ -250,17 +250,17 @@ public class BigNum {
 
         StringBuilder builder = new StringBuilder();
         int carrier = 0;
-        long lengthk = min(length(), a.length());
-        long lengthb = max(length(), a.length());
+        long lengthK = min(length(), a.length());
+        long lengthB = max(length(), a.length());
 
         BigNum n = new BigNum();
         if (a.length() >= length()) {
-            for (int j = 0; j < lengthk; j++) {
+            for (int j = 0; j < lengthK; j++) {
                 if (j != 0)
                     for (int i = 0; i < j; i++)
                         builder.append(0);
 
-                for (int i = 0; i < lengthb; i++) {
+                for (int i = 0; i < lengthB; i++) {
                     byte aDigit = a.digits[i];
                     byte thisDigit = digits[j];
                     int result = aDigit * thisDigit + carrier;
@@ -275,12 +275,12 @@ public class BigNum {
             }
         } else {
 
-            for (int i = 0; i < lengthk; i++) {
+            for (int i = 0; i < lengthK; i++) {
                 if (i != 0)
                     for (int j = 0; j < i; j++)
                         builder.append(0);
 
-                for (int j = 0; j < lengthb; j++) {
+                for (int j = 0; j < lengthB; j++) {
                     byte aDigit = a.digits[i];
                     byte thisDigit = digits[j];
                     int result = aDigit * thisDigit + carrier;
@@ -301,24 +301,24 @@ public class BigNum {
     }
 
 
-    BigNum multiply(BigNum a) {
+    public BigNum multiply(BigNum a) {
 
         if (a.compareTo(BigNum.ZERO) == 0) return BigNum.ZERO;
         if (a.compareTo(BigNum.ONE) == 0) return this;
 
         StringBuilder builder = new StringBuilder();
         int carrier = 0;
-        long lengthk = min(length(), a.length());
-        long lengthb = max(length(), a.length());
+        long lengthK = min(length(), a.length());
+        long lengthB = max(length(), a.length());
 
         BigNum n = new BigNum();
         if (a.length() >= length()) {
-            for (int j = 0; j < lengthk; j++) {
+            for (int j = 0; j < lengthK; j++) {
                 if (j != 0)
                     for (int i = 0; i < j; i++)
                         builder.append(0);
 
-                for (int i = 0; i < lengthb; i++) {
+                for (int i = 0; i < lengthB; i++) {
                     byte aDigit = a.digits[i];
                     byte thisDigit = digits[j];
                     int result = aDigit * thisDigit + carrier;
@@ -333,12 +333,12 @@ public class BigNum {
             }
         } else {
 
-            for (int i = 0; i < lengthk; i++) {
+            for (int i = 0; i < lengthK; i++) {
                 if (i != 0)
                     for (int j = 0; j < i; j++)
                         builder.append(0);
 
-                for (int j = 0; j < lengthb; j++) {
+                for (int j = 0; j < lengthB; j++) {
                     byte aDigit = a.digits[i];
                     byte thisDigit = digits[j];
                     int result = aDigit * thisDigit + carrier;
