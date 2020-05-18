@@ -108,7 +108,7 @@ public class BigNum {
         return false;
     }
 
-    int compareTo(BigNum a) {
+   protected int compareTo(BigNum a) {
         if (length() > a.length())
             return 1;
         if (length() < a.length())
