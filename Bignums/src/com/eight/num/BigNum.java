@@ -11,13 +11,13 @@ public class BigNum {
 
 
     private final byte[] digits;
-    private  boolean signed;
+    private boolean signed;
 
     private String clean(String s) {
         s = s.trim();
 
-        if (s.length()!=0 && s.charAt(0) == '-') signed = true;
-        else signed=false;
+        if (s.length() != 0 && s.charAt(0) == '-') signed = true;
+        else signed = false;
 
         int counter = 0;
         for (int i = 0; i < s.length(); i++)
@@ -28,7 +28,7 @@ public class BigNum {
         StringBuilder digits = new StringBuilder(s.length());
         boolean leadingZero = true;
         for (int i = 0; i < s.length(); i++) {
-            if (i==0 && (s.charAt(i) == '-' || s.charAt(i) == '+'))
+            if (i == 0 && (s.charAt(i) == '-' || s.charAt(i) == '+'))
                 continue;
             if (s.charAt(i) != '0')
                 leadingZero = false;
@@ -376,20 +376,23 @@ public class BigNum {
 
         a = BigNum.fromString("-10087385082639399776541672");
         b = BigNum.fromString("001890");
-        /*
+
         System.out.println(a.multiply(2000));
         System.out.println(a.subtract(b));
         System.out.println(a.multiply(b));
 
         System.out.println(a.add(b));
         System.out.println(b.divideBy(a));
-
-         */
         System.out.println(a.toString());
+
+         /*
+
         System.out.println(a.signed);
         System.out.println(b.signed);
 
         System.out.println(a.divideBy(b));
+
+         */
     }
 
 
