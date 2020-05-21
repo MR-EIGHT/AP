@@ -117,7 +117,7 @@ public class BigNum {
         return false;
     }
 
-    protected int compareTo(BigNum a) {
+    private int compareTo(BigNum a) {
         if (length() > a.length())
             return 1;
         if (length() < a.length())
@@ -374,7 +374,7 @@ public class BigNum {
         BigNum a = new BigNum();
         BigNum b = new BigNum();
 
-        a = BigNum.fromString("-10087385082639399776541672");
+        a = BigNum.fromString("10087385082639399776541672");
         b = BigNum.fromString("001890");
 
         System.out.println(a.multiply(2000));
