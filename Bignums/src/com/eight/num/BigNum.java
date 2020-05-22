@@ -80,7 +80,10 @@ public class BigNum {
         for (byte digit : digits) {
             builder.append(digit);
         }
-        return builder.reverse().toString();
+        builder = builder.reverse();
+
+        if (this.signed && !builder.toString().equals("0")) builder.insert(0, '-');
+        return builder.toString();
 
     }
 
@@ -118,6 +121,7 @@ public class BigNum {
     }
 
     private int compareTo(BigNum a) {
+
         if (length() > a.length())
             return 1;
         if (length() < a.length())
@@ -130,6 +134,8 @@ public class BigNum {
 
         }
         return 0;
+
+
     }
 
 
@@ -143,7 +149,8 @@ public class BigNum {
         else return b;
     }
 
-    public BigNum add(BigNum a) {
+    private BigNum adder(BigNum a) {
+
         StringBuilder builder = new StringBuilder();
         int carrier = 0;
 
@@ -164,35 +171,36 @@ public class BigNum {
 
     }
 
-    public BigNum subtract(BigNum a) {
+    private BigNum subtracter(BigNum a) {
         StringBuilder builder = new StringBuilder();
         byte[] ThisDigits = digits.clone();
 
 
-        if (a.isGreaterThan(this))
-            throw new IllegalArgumentException("The parameter is bigger than this number");
+        //  if (a.isGreaterThan(this))
 
-        else {
+        //throw new IllegalArgumentException("The parameter is bigger than this number");
 
-            for (int i = 0; i < max(length(), a.length()); i++) {
+        // else {
 
-                byte aDigit = i < a.length() ? a.digits[i] : 0;
-                byte thisDigit = i < length() ? ThisDigits[i] : 0;
-                int result = thisDigit - aDigit;
-                if (thisDigit - aDigit < 0) {
-                    result = thisDigit - aDigit + 10;
-                    ThisDigits[i + 1]--;
-                }
+        for (int i = 0; i < max(length(), a.length()); i++) {
 
-
-                builder.append(result);
+            byte aDigit = i < a.length() ? a.digits[i] : 0;
+            byte thisDigit = i < length() ? ThisDigits[i] : 0;
+            int result = thisDigit - aDigit;
+            if (thisDigit - aDigit < 0) {
+                result = thisDigit - aDigit + 10;
+                ThisDigits[i + 1]--;
             }
 
-            return BigNum.fromString(builder.reverse().toString());
 
+            builder.append(result);
         }
 
+        return BigNum.fromString(builder.reverse().toString());
+
     }
+
+    // }
 
 
     public BigNum divideBy(BigNum a) {
@@ -224,7 +232,7 @@ public class BigNum {
 
             for (i = 9; !(M.compareTo(a.multiply(i)) == 1) && !(M.compareTo(a.multiply(i)) == 0); i--) ;
             result.append(i);
-            M = M.subtract(a.multiply(i));
+            M = M.subtracter(a.multiply(i));
             builder = new StringBuilder();
             builder.append(M.toString());
 
@@ -246,7 +254,10 @@ public class BigNum {
 
         } while (M.isGreaterThan(a));
 
-        return BigNum.fromString(result.toString());
+
+        BigNum n = BigNum.fromString(result.toString());
+        if (this.signed ^ a.signed) n.signed = true;
+        return n;
     }
 
 
@@ -306,7 +317,11 @@ public class BigNum {
 
 
         }
+        if (this.signed ^ a.signed) n.signed = true;
+
+
         return n;
+
     }
 
 
@@ -364,35 +379,140 @@ public class BigNum {
 
 
         }
+        if (this.signed ^ a.signed) n.signed = true;
+
+
         return n;
+    }
+
+
+    public BigNum add(BigNum a) {
+        if (!a.signed && !this.signed) return this.adder(a);
+
+        if (a.signed && this.signed) {
+            BigNum c = this.adder(a);
+            c.signed = true;
+            return c;
+        }
+
+        if (this.signed) {
+            BigNum c;
+            if (this.compareTo(a) == 1)
+                c = this.subtracter(a);
+            else c = a.subtracter(this);
+
+            if (this.compareTo(a) == 1) c.signed = true;
+            else c.signed = false;
+            return c;
+        }
+
+
+        BigNum c;
+        if (this.compareTo(a) == 1)
+            c = this.subtracter(a);
+        else c = a.subtracter(this);
+
+        if (this.compareTo(a) == 1) c.signed = false;
+        else c.signed = true;
+        return c;
+
+
+    }
+
+
+    public BigNum subtract(BigNum a) {
+        BigNum c = new BigNum();
+
+        if (!this.signed && !a.signed) {
+
+            if (this.compareTo(a) == 1)
+                c = this.subtracter(a);
+            if (this.compareTo(a) == -1) {
+                c = a.subtracter(this);
+                c.signed = true;
+            }
+        }
+
+        if (this.signed && a.signed) {
+            if (this.compareTo(a) == 1) {
+                c = this.subtracter(a);
+                c.signed = true;
+            }
+            if (this.compareTo(a) == -1) {
+                c = a.subtracter(this);
+                c.signed = false;
+            }
+        }
+
+        if (!this.signed && a.signed) {
+            c = this.adder(a);
+            c.signed = false;
+
+        }
+
+        if (this.signed && !a.signed) {
+            c = this.adder(a);
+            c.signed = true;
+
+        }
+
+
+        return c;
     }
 
     public static void main(String[] args) {
 
 
         // Usage  :)
+
+
         BigNum a = new BigNum();
         BigNum b = new BigNum();
 
-        a = BigNum.fromString("10087385082639399776541672");
-        b = BigNum.fromString("001890");
+        a = BigNum.fromString("-1008");
+        b = BigNum.fromString("0");
 
-        System.out.println(a.multiply(2000));
         System.out.println(a.subtract(b));
-        System.out.println(a.multiply(b));
+        System.out.println(b.subtract(a));
 
+        System.out.println(b.add(a));
         System.out.println(a.add(b));
-        System.out.println(b.divideBy(a));
-        System.out.println(a.toString());
+        a = BigNum.fromString("1008");
+        b = BigNum.fromString("-2000");
 
-         /*
+        System.out.println(a.subtract(b));
+        System.out.println(b.subtract(a));
+
+
+        a = BigNum.fromString("1008");
+        b = BigNum.fromString("2000");
+
+        System.out.println(a.subtract(b));
+        System.out.println(b.subtract(a));
+
+
+        a = BigNum.fromString("-1008");
+        b = BigNum.fromString("2000");
+
+        System.out.println(a.subtract(b));
+        System.out.println(b.subtract(a));
+
 
         System.out.println(a.signed);
         System.out.println(b.signed);
 
+        System.out.println(a.add(b));
+
+        System.out.println(b.add(a));
+        System.out.println(a.multiply(b));
+        System.out.println(a.multiply(b));
+        System.out.println(b.multiply(-1008));
         System.out.println(a.divideBy(b));
 
-         */
+        System.out.println(b.divideBy(a));
+        System.out.println(a.toString());
+
+
     }
 
 
