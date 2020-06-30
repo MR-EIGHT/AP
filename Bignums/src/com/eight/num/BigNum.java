@@ -593,22 +593,6 @@ public class BigNum {
 
     }
 
-    public static BigNum Decimalize(String n) {
-        String num = n;
-        BigNum dec_value = BigNum.ZERO;
-
-
-        BigNum base = BigNum.ONE;
-
-        int len = num.length();
-        for (int i = len - 1; i >= 0; i--) {
-            if (num.charAt(i) == '1')
-                dec_value = dec_value.add(base);
-            base = base.multiply(2);
-        }
-
-        return dec_value;
-    }
 
     public ArrayList<BigNum> PrimeFactors() {
         ArrayList<BigNum> primeNumbers = new ArrayList<>();
@@ -644,6 +628,24 @@ public class BigNum {
             // System.out.println(n + " " + "1");
         }
         return primeNumbers;
+    }
+
+
+    public static BigNum Decimalize(String n) {
+        String num = n;
+        BigNum dec_value = BigNum.ZERO;
+
+
+        BigNum base = BigNum.ONE;
+
+        int len = num.length();
+        for (int i = len - 1; i >= 0; i--) {
+            if (num.charAt(i) == '1')
+                dec_value = dec_value.add(base);
+            base = base.multiply(2);
+        }
+
+        return dec_value;
     }
 
 
