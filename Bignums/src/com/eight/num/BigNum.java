@@ -1,6 +1,7 @@
 package com.eight.num;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -340,6 +341,61 @@ public class BigNum {
     }
 
 
+    private BigNum multiply_Positive_fast(BigNum a) {
+        StringBuilder first = new StringBuilder();
+        StringBuilder second = new StringBuilder();
+
+        first.append(this.toString());
+        second.append(a.toString());
+
+
+        int length1 = first.length();
+        int length2 = second.length();
+
+        int[] answer = new int[length1 + length2];
+
+        int Oin = 0;
+        int Tin = 0;
+
+        for (int digit1 = length1 - 1; digit1 >= 0; digit1--) {
+            int carry = 0;
+            int currentDigitOfOne = first.charAt(digit1) - '0';
+
+            Tin = 0;
+
+            for (int digit2 = length2 - 1; digit2 >= 0; digit2--) {
+                int currentDigitOfTwo = second.charAt(digit2) - '0';
+
+                int sum = (currentDigitOfOne * currentDigitOfTwo) + answer[Oin + Tin] + carry;
+
+                carry = sum / 10;
+
+                answer[Oin + Tin] = sum % 10;
+
+                Tin++;
+            }
+            if (carry > 0) {
+                answer[Oin + Tin] += carry;
+            }
+
+            Oin++;
+        }
+
+
+        StringBuilder n = new StringBuilder();
+        int i = 0;
+        while (i <= answer.length - 1) {
+            n.append(answer[i]);
+            i++;
+        }
+
+
+        BigNum resultNum = BigNum.fromString(n.reverse().toString());
+        resultNum.signed = false;
+        return resultNum;
+    }
+
+
     public BigNum multiply(BigNum a) {
 
         if (a.compareTo(BigNum.ZERO) == 0) return BigNum.ZERO;
@@ -487,11 +543,8 @@ public class BigNum {
     }
 
 
-
-
-
     public BigNum Pow(BigNum a) {
-        if(a.signed) throw new IllegalArgumentException("Bad input");
+        if (a.signed) throw new IllegalArgumentException("Bad input");
 
         BigNum res = this;
         for (BigNum i = BigNum.ONE; i.compareTo(a) != 0; i = i.add(BigNum.ONE)) {
@@ -522,8 +575,8 @@ public class BigNum {
             randnum.append(randD);
         }
         if (sum % 3 == 0) Random(length, true);
-       // if ((BigNum.fromString(randnum.toString()).subtract(BigNum.fromLong(2 * (int) randnum.charAt(randnum.length() - 1))).mod(BigNum.fromLong(7)).equals(BigNum.ZERO)))
-         //   Random(length, true);
+        // if ((BigNum.fromString(randnum.toString()).subtract(BigNum.fromLong(2 * (int) randnum.charAt(randnum.length() - 1))).mod(BigNum.fromLong(7)).equals(BigNum.ZERO)))
+        //   Random(length, true);
         return BigNum.fromString(randnum.toString());
 
     }
@@ -555,6 +608,42 @@ public class BigNum {
         }
 
         return dec_value;
+    }
+
+    public ArrayList<BigNum> PrimeFactors() {
+        ArrayList<BigNum> primeNumbers = new ArrayList<>();
+        int count = 0;
+        long number = Long.parseLong(this.toString());
+        long square = (long) Math.sqrt(Long.parseLong(this.toString()));
+
+
+        while (!(number % 2 > 0)) {
+            number >>= 1;
+            count++;
+        }
+
+
+        if (count > 0) {
+            primeNumbers.add(BigNum.fromLong(2));
+//            System.out.println("2" + " " + count);
+        }
+
+        for (long i = 3; i <= square; i += 2) {
+            count = 0;
+            while (number % i == 0) {
+                count++;
+                number = number / i;
+            }
+            if (count > 0) {
+                primeNumbers.add(BigNum.fromLong(i));
+                // System.out.println(i + " " + count);
+            }
+        }
+        if (number > 2) {
+            primeNumbers.add(BigNum.fromLong(number));
+            // System.out.println(n + " " + "1");
+        }
+        return primeNumbers;
     }
 
 
@@ -614,11 +703,10 @@ public class BigNum {
         return res;
     }
 
-   private  static boolean miillerTest(BigNum d, BigNum n) {
+    private static boolean miillerTest(BigNum d, BigNum n) {
         Random ran = new Random();
 
         BigNum a = BigNum.fromLong(Math.abs(ran.nextLong()));
-
 
 
         // Compute a^d % n
@@ -649,7 +737,6 @@ public class BigNum {
             if (n.digits[0] == even)
                 return false;
         }
-
 
 
         if (!n.isGreaterThan(BigNum.ONE) || n.equals(BigNum.fromLong(4)))
@@ -683,6 +770,8 @@ public class BigNum {
 
     }
 
+
+//not-practical-yet part!
 
     private static BigNum multiplyKaratsuba(BigNum x, BigNum y) {
         int size1 = x.length();
@@ -721,82 +810,6 @@ public class BigNum {
             m = m.multiply(2);
         }
         return m;
-
-    }
-
-
-    private BigNum multiply_Positive_fast(BigNum a) {
-        StringBuilder first = new StringBuilder();
-        StringBuilder second = new StringBuilder();
-
-        first.append(this.toString());
-        second.append(a.toString());
-
-
-        int length1 = first.length();
-        int length2 = second.length();
-
-        int[] answer = new int[length1 + length2];
-
-        int Oin = 0;
-        int Tin = 0;
-
-        for (int digit1 = length1 - 1; digit1 >= 0; digit1--) {
-            int carry = 0;
-            int currentDigitOfOne = first.charAt(digit1) - '0';
-
-            Tin = 0;
-
-            for (int digit2 = length2 - 1; digit2 >= 0; digit2--) {
-                int currentDigitOfTwo = second.charAt(digit2) - '0';
-
-                int sum = (currentDigitOfOne * currentDigitOfTwo) + answer[Oin + Tin] + carry;
-
-                carry = sum / 10;
-
-                answer[Oin + Tin] = sum % 10;
-
-                Tin++;
-            }
-            if (carry > 0) {
-                answer[Oin + Tin] += carry;
-            }
-
-            Oin++;
-        }
-
-
-        StringBuilder n = new StringBuilder();
-        int i = 0;
-        while (i <= answer.length - 1) {
-            n.append(answer[i]);
-            i++;
-        }
-
-
-        BigNum resultNum = BigNum.fromString(n.reverse().toString());
-        resultNum.signed = false;
-        return resultNum;
-    }
-
-
-
-
-
-
-
-
-
-
-    public static void main(String[] args) {
-
-
-        // Usage  :)
-        BigNum a = new BigNum();
-        a = BigNum.fromString("36");
-
-
-       // System.out.println(generatePrime(100));
 
     }
 
