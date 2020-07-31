@@ -27,9 +27,9 @@ public class RSA {
     public static void encrypt(RSA key) throws IOException {
         String s;
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(("K:\\Projects of AP\\bignums\\Bignums\\src\\com\\eight\\RSAEncryptor\\hello" + "Encrypted" + ".txt")));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(("src\\com\\eight\\RSAEncryptor\\" + "helloEncrypted" + ".txt")));
 
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream("K:\\Projects of AP\\bignums\\Bignums\\src\\com\\eight\\RSAEncryptor\\hello.txt"));
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream("src\\com\\eight\\RSAEncryptor\\hello.txt"));
 
         ArrayList<BigNum> encryptedArr = new ArrayList<>();
 
@@ -37,8 +37,8 @@ public class RSA {
         while (bis.available() > 0) {
             int NumberD = bis.read();
             s = Integer.toString(NumberD);
-            byte[] bytes = s.getBytes();
-            BigNum Text = BigNum.fromByte(bytes);
+
+            BigNum Text = BigNum.fromString(s);
 
             BigNum encrypt = key.encrypt(Text);
             encryptedArr.add(encrypt);
@@ -49,7 +49,7 @@ public class RSA {
         StringBuilder encrypted = new StringBuilder();
 
         for (BigNum data : encryptedArr) {
-            encrypted.append(data);
+            encrypted.append(data).append("\n");
         }
 
 
@@ -64,37 +64,28 @@ public class RSA {
     public static void decrypt(RSA key) throws IOException {
         String s;
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(("K:\\Projects of AP\\bignums\\Bignums\\src\\com\\eight\\RSAEncryptor\\hello" + "Decrypted" + ".txt")));
+        FileOutputStream fileOut = new FileOutputStream("src\\com\\eight\\RSAEncryptor\\hello" + "Decrypted" + ".txt");
 
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream("K:\\Projects of AP\\bignums\\Bignums\\src\\com\\eight\\RSAEncryptor\\helloEncrypted.txt"));
+        BufferedReader bis = new BufferedReader(new FileReader("src\\com\\eight\\RSAEncryptor\\helloEncrypted.txt"));
 
-        ArrayList<BigNum> decryptedArr = new ArrayList<>();
         System.out.println("Decryption Started!");
-        while (bis.available() > 0) {
-            int NumberD = bis.read();
-            s = Integer.toString(NumberD);
-            byte[] bytes = s.getBytes();
-            BigNum Text = BigNum.fromByte(bytes);
+        while (bis.ready()) {
 
-            BigNum decrypt = key.decrypt(Text);
-            decryptedArr.add(decrypt);
+            s = bis.readLine();
+            if (s.equals(""))
+                break;
+
+            BigNum Text = BigNum.fromString(s);
+
+            fileOut.write(Integer.parseInt(key.decrypt(Text).toString()));
 
         }
 
-
-        StringBuilder decrypted = new StringBuilder();
-
-        for (BigNum data : decryptedArr) {
-            decrypted.append(data);
-        }
-
-
-        writer.write(decrypted.toString());
+        fileOut.close();
 
         System.out.println("Decryption Finished!");
 
         bis.close();
-        writer.close();
 
     }
 
