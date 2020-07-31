@@ -5,7 +5,7 @@
 <?import javafx.scene.text.Font?>
 <AnchorPane layoutX="-30.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="272" prefWidth="265"
             styleClass="background" stylesheets="@main.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eight.calculator.calc">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eight.calculator.CalculatorGui">
    <Button  prefHeight="35" prefWidth="50" layoutX="40" layoutY="185" mnemonicParsing="false"
            onAction="#handleOnAnyButtonClicked" text="1"/>
    <Button prefHeight="35" prefWidth="50" layoutX="95" layoutY="185" mnemonicParsing="false"

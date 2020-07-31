@@ -11,14 +11,14 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 
-public final class calc extends Application {
+public final class CalculatorGui extends Application {
 
     private boolean numberInputting;
 
     @FXML
     private TextField display;
 
-    public calc() {
+    public CalculatorGui() {
 
         this.numberInputting = false;
     }
