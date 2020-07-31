@@ -220,7 +220,7 @@ public class BigNum {
 
 
         BigNum prime = Random(length, true);
-        while (!isPrime(prime, 20))
+        while (!isPrime(prime, 5))
             prime = Random(length, true);
 
         return prime;
