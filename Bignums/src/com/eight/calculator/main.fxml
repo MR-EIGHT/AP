@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane layoutX="-30.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="272" prefWidth="265"
+            styleClass="background" stylesheets="@main.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.eight.calculator.calc">
+   <Button  prefHeight="35" prefWidth="50" layoutX="40" layoutY="185" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="1"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="95" layoutY="185" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="2"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="150" layoutY="185" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="3"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="40" layoutY="143" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="4"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="95" layoutY="143" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="5"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="150" layoutY="143" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="6"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="40" layoutY="101" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="7"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="95" layoutY="101" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="8"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="150" layoutY="101" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="9"/>
+   <TextField fx:id="display" editable="false" layoutX="40" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity"
+              prefHeight="35.0" prefWidth="215" styleClass="display" text="0">
+      <font>
+         <Font name="Arial Rounded MT Bold" size="10.0"/>
+      </font>
+   </TextField>
+   <Button graphicTextGap="5.0" layoutX="205" layoutY="60.0" maxHeight="-Infinity" maxWidth="-Infinity"
+           mnemonicParsing="false" onAction="#handleOnAnyButtonClicked" prefHeight="35" prefWidth="50" text="C"/>
+   <Button layoutX="205" layoutY="185" mnemonicParsing="false" onAction="#handleOnAnyButtonClicked" prefHeight="77"
+           prefWidth="50.0" text="=" style="-fx-background-color: #9B5331; -fx-text-fill: white"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="205" layoutY="101" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="＋"/>
+   <Button layoutX="95" layoutY="226" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" prefHeight="35" prefWidth="50" text="0"/>
+   <Button layoutX="40" layoutY="226" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" prefHeight="35" prefWidth="50" text="("/>
+   <Button layoutX="150" layoutY="226" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" prefHeight="35" prefWidth="50" text=")"/>
+
+   <Button prefHeight="35" prefWidth="50" layoutX="205" layoutY="143" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" text="－"/>
+   <Button prefWidth="50" prefHeight="35" layoutX="150" layoutY="60" maxHeight="-Infinity" maxWidth="-Infinity"
+           mnemonicParsing="false" onAction="#handleOnAnyButtonClicked" styleClass="background" text="/"/>
+   <Button prefHeight="35" prefWidth="50" layoutX="40" layoutY="60" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" styleClass="background" text="^"/>
+   <Button prefWidth="50" prefHeight="35" layoutX="95" layoutY="60" mnemonicParsing="false"
+           onAction="#handleOnAnyButtonClicked" styleClass="background" text="×"/>
+</AnchorPane>

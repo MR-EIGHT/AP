@@ -16,35 +16,6 @@ public class BigNum {
     private final byte[] digits;
     private boolean signed;
 
-    private String clean(String s) {
-        s = s.trim();
-
-        if (s.length() != 0 && s.charAt(0) == '-') signed = true;
-        else signed = false;
-
-        int counter = 0;
-        for (int i = 0; i < s.length(); i++)
-            if (s.charAt(i) == '0')
-                counter++;
-        if (counter == s.length()) return "0";
-
-        StringBuilder digits = new StringBuilder(s.length());
-        boolean leadingZero = true;
-        for (int i = 0; i < s.length(); i++) {
-            if (i == 0 && (s.charAt(i) == '-' || s.charAt(i) == '+'))
-                continue;
-            if (s.charAt(i) != '0')
-                leadingZero = false;
-
-            if (leadingZero && s.charAt(i) == '0')
-                continue;
-            digits.append(s.charAt(i));
-        }
-        return digits.toString();
-
-
-    }
-
 
     public BigNum(String str) {
         str = clean(str);
@@ -61,6 +32,7 @@ public class BigNum {
         }
     }
 
+
     public BigNum(long val) {
         this(Long.toString(val));
     }
@@ -75,6 +47,274 @@ public class BigNum {
 
     public static BigNum fromString(String val) {
         return new BigNum((val));
+    }
+
+    public static BigNum fromByte(byte[] digits) {
+        if (digits == null)
+            throw new NullPointerException();
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = digits.length - 1; i >= 0; i--) {
+            builder.append(digits[i]);
+        }
+
+        return BigNum.fromString(builder.toString());
+    }
+
+    public static int max(int a, int b) {
+        if (a >= b) return a;
+        else return b;
+    }
+
+    public static int min(int a, int b) {
+        if (a <= b) return a;
+        else return b;
+    }
+
+    public static BigNum Random(int length, boolean odd) {
+        int sum = 0;
+        StringBuilder randnum = new StringBuilder();
+        int randD = (int) (Math.random() * ((9) + 1));
+        for (int i = 0; i < length; i++) {
+            randD = ((int) (Math.random() * ((9) + 1)));
+            BigNum.fromLong(randD);
+            if (i == 0)
+                while (randD == 0) randD = ((int) (Math.random() * ((9) + 1)));
+            if (i == length - 1)
+                while (!BigNum.fromLong(randD).isOdd() || BigNum.fromLong(randD).compareTo(BigNum.fromLong(5)) == 0)
+                    randD = ((int) (Math.random() * ((9) + 1)));
+            sum = sum + randD;
+            randnum.append(randD);
+        }
+        BigNum Randi = BigNum.fromString(randnum.toString());
+        if (sum % 3 == 0) Random(length, true);
+//         if ((BigNum.fromString(randnum.substring(0,randnum.length()-1)).subtract(BigNum.fromLong(2 * (int) randnum.charAt(randnum.length() - 1))).mod(BigNum.fromLong(7)).equals(BigNum.ZERO)))
+//           Random(length, true);
+//if (Randi.devidable()) Random(length, true);
+
+
+        return Randi;
+
+    }
+
+    public static BigNum Decimalize(String n) {
+        String num = n;
+        BigNum dec_value = BigNum.ZERO;
+
+
+        BigNum base = BigNum.ONE;
+
+        int len = num.length();
+        for (int i = len - 1; i >= 0; i--) {
+            if (num.charAt(i) == '1')
+                dec_value = dec_value.add(base);
+            base = base.multiply(2);
+        }
+
+        return dec_value;
+    }
+
+    public static String shift(StringBuilder bits, int k) {
+        char temp;
+        int n = bits.length();
+        if (k > 0) {
+
+            for (int j = 0; j < k; j++) {
+                temp = bits.charAt(n - 1);
+                for (int i = n - 1; i > 0; i--)
+                    bits.setCharAt(i, bits.charAt(i - 1));
+                bits.setCharAt(0, temp);
+
+            }
+        }
+        if (k < 0) {
+            k = -k;
+
+            for (int j = 0; j < k; j++) {
+                temp = bits.charAt(0);
+                for (int i = 0; i < n - 1; i++)
+                    bits.setCharAt(i, bits.charAt(i + 1));
+                bits.setCharAt(n - 1, temp);
+
+            }
+        }
+
+        return bits.toString();
+    }
+
+    private static BigNum power(BigNum x, BigNum y, BigNum p) {
+
+        BigNum res = BigNum.ONE;
+
+
+        x = x.mod(p);
+
+        while (y.compareTo(BigNum.ZERO) == 1) {
+
+            if (y.isOdd())
+                res = (res.multiply_Positive_fast(x)).mod(p);
+
+            y = y.divideBy(BigNum.fromLong(2));
+            x = x.multiply_Positive_fast(x).mod(p);
+        }
+
+        return res;
+    }
+
+    private static boolean miillerTest(BigNum d, BigNum n) {
+        Random ran = new Random();
+
+        BigNum a = BigNum.fromLong(Math.abs(ran.nextLong()));
+
+
+        // Compute a^d % n
+        BigNum x = power(a, d, n);
+
+        if (x.equals(BigNum.ONE) || x.equals(n.subtract(BigNum.ONE)))
+            return true;
+
+
+        while (!d.equals(n.subtract(BigNum.ONE))) {
+            x = x.multiply_Positive_fast(x).mod(n);
+
+            d = d.multiply(2);
+
+            if (x.equals(BigNum.ONE))
+                return false;
+            if (x.equals(n.subtract(BigNum.ONE)))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isPrime(BigNum n, int k) {
+
+        for (Byte even : evenNumbers) {
+            if (n.digits[0] == even)
+                return false;
+        }
+
+
+        if (!n.isGreaterThan(BigNum.ONE) || n.equals(BigNum.fromLong(4)))
+            return false;
+        if (!n.isGreaterThan(BigNum.fromLong(3)))
+            return true;
+
+
+        BigNum d = n.subtract(BigNum.ONE);
+
+        while (d.mod(BigNum.fromLong(2)).equals(BigNum.ZERO))
+            d = d.divideBy(BigNum.fromLong(2));
+
+
+        for (int i = 0; i < k; i++)
+            if (!miillerTest(d, n))
+                return false;
+
+        return true;
+    }
+
+    public static BigNum generatePrime(int length) {
+
+
+        BigNum prime = Random(length, true);
+        while (!isPrime(prime, 20))
+            prime = Random(length, true);
+
+        return prime;
+
+    }
+
+    private static BigNum multiplyKaratsuba(BigNum x, BigNum y) {
+        int size1 = x.length();
+        int size2 = y.length();
+
+        int N = Math.max(size1, size2);
+
+        if (N < 5)
+            return x.multiply(y);
+
+
+        N = (N / 2) + (N % 2);
+
+        BigNum m = po(N);
+
+
+        BigNum b = x.divideBy(m);
+        BigNum a = x.subtract(b.multiply(m));
+        BigNum d = y.divideBy(m);
+        BigNum c = y.subtract(d.multiply(m));
+
+        BigNum z0 = multiplyKaratsuba(a, c);
+        BigNum z2 = multiplyKaratsuba(b, d);
+        BigNum z1 = multiplyKaratsuba(a.add(b), c.add(d));
+
+
+        return z0.add((z1.subtract(z0).subtract(z2)).multiply(po(N))).add(z2.multiply(po(N * 2)));
+        //    return z0 + (z1 - z0 - z2 << m) + (z2 << 2 * m);
+    }
+
+    private static BigNum po(int N) {
+        BigNum m = BigNum.ONE;
+
+        for (int i = 0; i < N; i++) {
+            m = m.multiply(2);
+        }
+        return m;
+
+    }
+
+    // }
+
+    public static void main(String[] args) {
+        //  System.out.println(generatePrime(80));
+        System.out.println(BigNum.fromString("25").binarize());
+        System.out.println(shift(BigNum.fromString("25").binarize(), -2));
+        System.out.println(Decimalize(shift(BigNum.fromString("25").binarize(), -2).toString()));
+    }
+
+    public static BigNum gcd(BigNum num, BigNum second) {
+
+        if (num.equals(BigNum.ZERO))
+            return num;
+
+        return gcd(num.mod(second), second);
+    }
+
+    private String clean(String s) {
+        int negSign = 0;
+        s = s.trim();
+
+        if (s.length() != 0 && s.charAt(0) == '-') signed = true;
+        else signed = false;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '-') negSign++;
+        }
+        if (negSign % 2 == 0) signed = false;
+
+        int counter = 0;
+        for (int i = 0; i < s.length(); i++)
+            if (s.charAt(i) == '0')
+                counter++;
+        if (counter == s.length()) return "0";
+
+        StringBuilder digits = new StringBuilder(s.length());
+        boolean leadingZero = true;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '-' || s.charAt(i) == '+')
+                continue;
+            if (s.charAt(i) != '0')
+                leadingZero = false;
+
+            if (leadingZero && s.charAt(i) == '0')
+                continue;
+            digits.append(s.charAt(i));
+        }
+        return digits.toString();
+
+
     }
 
     @Override
@@ -93,7 +333,6 @@ public class BigNum {
     int length() {
         return digits.length;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -139,17 +378,6 @@ public class BigNum {
         return 0;
 
 
-    }
-
-
-    public static int max(int a, int b) {
-        if (a >= b) return a;
-        else return b;
-    }
-
-    public static int min(int a, int b) {
-        if (a <= b) return a;
-        else return b;
     }
 
     private BigNum adder(BigNum a) {
@@ -202,9 +430,6 @@ public class BigNum {
         return BigNum.fromString(builder.reverse().toString());
 
     }
-
-    // }
-
 
     public BigNum divideBy(BigNum a) {
         int i, counter = 0;
@@ -276,7 +501,6 @@ public class BigNum {
         return n;
     }
 
-
     public BigNum multiply(int A) {
 
         if (A == 0) return BigNum.ZERO;
@@ -340,7 +564,6 @@ public class BigNum {
 
     }
 
-
     private BigNum multiply_Positive_fast(BigNum a) {
         StringBuilder first = new StringBuilder();
         StringBuilder second = new StringBuilder();
@@ -394,7 +617,6 @@ public class BigNum {
         resultNum.signed = false;
         return resultNum;
     }
-
 
     public BigNum multiply(BigNum a) {
 
@@ -459,7 +681,6 @@ public class BigNum {
         return n;
     }
 
-
     public BigNum add(BigNum a) {
         if (!a.signed && !this.signed) return this.adder(a);
 
@@ -492,7 +713,6 @@ public class BigNum {
 
 
     }
-
 
     public BigNum subtract(BigNum a) {
         BigNum c = new BigNum();
@@ -534,7 +754,6 @@ public class BigNum {
         return c;
     }
 
-
     public BigNum mod(BigNum a) {
 
         BigNum quotient = this.divideBy(a);
@@ -542,10 +761,10 @@ public class BigNum {
 
     }
 
-
     public BigNum Pow(BigNum a) {
         if (a.signed) throw new IllegalArgumentException("Bad input");
-
+        if (a.equals(BigNum.ZERO))
+            return BigNum.ONE;
         BigNum res = this;
         for (BigNum i = BigNum.ONE; i.compareTo(a) != 0; i = i.add(BigNum.ONE)) {
             if (i.compareTo(BigNum.ONE) != 0 && a.mod(i).compareTo(BigNum.ZERO) == 0 && a.divideBy(i).compareTo(BigNum.fromLong(2)) == 0) {
@@ -559,26 +778,14 @@ public class BigNum {
     }
 
 
-    public static BigNum Random(int length, boolean odd) {
-        int sum = 0;
-        StringBuilder randnum = new StringBuilder();
-        int randD = (int) (Math.random() * ((9) + 1));
-        for (int i = 0; i < length; i++) {
-            randD = ((int) (Math.random() * ((9) + 1)));
-            BigNum.fromLong(randD);
-            if (i == 0)
-                while (randD == 0) randD = ((int) (Math.random() * ((9) + 1)));
-            if (i == length - 1)
-                while (!BigNum.fromLong(randD).isOdd() || BigNum.fromLong(randD).compareTo(BigNum.fromLong(5)) == 0)
-                    randD = ((int) (Math.random() * ((9) + 1)));
-            sum = sum + randD;
-            randnum.append(randD);
-        }
-        if (sum % 3 == 0) Random(length, true);
-        // if ((BigNum.fromString(randnum.toString()).subtract(BigNum.fromLong(2 * (int) randnum.charAt(randnum.length() - 1))).mod(BigNum.fromLong(7)).equals(BigNum.ZERO)))
-        //   Random(length, true);
-        return BigNum.fromString(randnum.toString());
+//not-practical-yet part!
 
+    private boolean devidable() {
+        int[] primeNumbersLessThan100 = {7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+        for (int i = 0; i < primeNumbersLessThan100.length; i++) {
+            if (this.mod(BigNum.fromLong(primeNumbersLessThan100[i])).equals(BigNum.ZERO)) return true;
+        }
+        return false;
     }
 
     public StringBuilder binarize() {
@@ -592,7 +799,6 @@ public class BigNum {
         return bits;
 
     }
-
 
     public ArrayList<BigNum> PrimeFactors() {
         ArrayList<BigNum> primeNumbers = new ArrayList<>();
@@ -630,53 +836,6 @@ public class BigNum {
         return primeNumbers;
     }
 
-
-    public static BigNum Decimalize(String n) {
-        String num = n;
-        BigNum dec_value = BigNum.ZERO;
-
-
-        BigNum base = BigNum.ONE;
-
-        int len = num.length();
-        for (int i = len - 1; i >= 0; i--) {
-            if (num.charAt(i) == '1')
-                dec_value = dec_value.add(base);
-            base = base.multiply(2);
-        }
-
-        return dec_value;
-    }
-
-
-    public static String shift(StringBuilder bits, int k) {
-        char temp;
-        int n = bits.length();
-        if (k > 0) {
-
-            for (int j = 0; j < k; j++) {
-                temp = bits.charAt(n - 1);
-                for (int i = n - 1; i > 0; i--)
-                    bits.setCharAt(i, bits.charAt(i - 1));
-                bits.setCharAt(0, temp);
-
-            }
-        }
-        if (k < 0) {
-            k = -k;
-
-            for (int j = 0; j < k; j++) {
-                temp = bits.charAt(0);
-                for (int i = 0; i < n - 1; i++)
-                    bits.setCharAt(i, bits.charAt(i + 1));
-                bits.setCharAt(n - 1, temp);
-
-            }
-        }
-
-        return bits.toString();
-    }
-
     public Boolean isOdd() {
         for (int odd : oddNumbers) {
             if (this.digits[0] == odd)
@@ -685,134 +844,18 @@ public class BigNum {
         return false;
     }
 
-
-    private static BigNum power(BigNum x, BigNum y, BigNum p) {
-
-        BigNum res = BigNum.ONE;
-
-
-        x = x.mod(p);
-
-        while (y.compareTo(BigNum.ZERO) == 1) {
-
-            if (y.isOdd())
-                res = (res.multiply_Positive_fast(x)).mod(p);
-
-            y = y.divideBy(BigNum.fromLong(2));
-            x = x.multiply_Positive_fast(x).mod(p);
-        }
-
-        return res;
-    }
-
-    private static boolean miillerTest(BigNum d, BigNum n) {
-        Random ran = new Random();
-
-        BigNum a = BigNum.fromLong(Math.abs(ran.nextLong()));
-
-
-        // Compute a^d % n
-        BigNum x = power(a, d, n);
-
-        if (x.equals(BigNum.ONE) || x.equals(n.subtract(BigNum.ONE)))
-            return true;
-
-
-        while (!d.equals(n.subtract(BigNum.ONE))) {
-            x = x.multiply_Positive_fast(x).mod(n);
-
-            d = d.multiply(2);
-
-            if (x.equals(BigNum.ONE))
-                return false;
-            if (x.equals(n.subtract(BigNum.ONE)))
-                return true;
-        }
-
-        return false;
+    public BigNum modInverse(BigNum phi) {
+        BigNum a = this;
+        a = a.mod(phi);
+        for (BigNum x = new BigNum("1"); x.compareTo(phi) == -1; x = x.add(BigNum.ONE))
+            if ((a.multiply(x)).mod(phi).equals(BigNum.ONE))
+                return x;
+        return BigNum.ONE;
     }
 
 
-    public static boolean isPrime(BigNum n, int k) {
-
-        for (Byte even : evenNumbers) {
-            if (n.digits[0] == even)
-                return false;
-        }
-
-
-        if (!n.isGreaterThan(BigNum.ONE) || n.equals(BigNum.fromLong(4)))
-            return false;
-        if (!n.isGreaterThan(BigNum.fromLong(3)))
-            return true;
-
-
-        BigNum d = n.subtract(BigNum.ONE);
-
-        while (d.mod(BigNum.fromLong(2)).equals(BigNum.ZERO))
-            d = d.divideBy(BigNum.fromLong(2));
-
-
-        for (int i = 0; i < k; i++)
-            if (!miillerTest(d, n))
-                return false;
-
-        return true;
-    }
-
-
-    public static BigNum generatePrime(int length) {
-
-
-        BigNum prime = Random(length, true);
-        while (!isPrime(prime, 10))
-            prime = Random(length, true);
-
-        return prime;
-
-    }
-
-
-//not-practical-yet part!
-
-    private static BigNum multiplyKaratsuba(BigNum x, BigNum y) {
-        int size1 = x.length();
-        int size2 = y.length();
-
-        int N = Math.max(size1, size2);
-
-        if (N < 5)
-            return x.multiply(y);
-
-
-        N = (N / 2) + (N % 2);
-
-        BigNum m = po(N);
-
-
-        BigNum b = x.divideBy(m);
-        BigNum a = x.subtract(b.multiply(m));
-        BigNum d = y.divideBy(m);
-        BigNum c = y.subtract(d.multiply(m));
-
-        BigNum z0 = multiplyKaratsuba(a, c);
-        BigNum z2 = multiplyKaratsuba(b, d);
-        BigNum z1 = multiplyKaratsuba(a.add(b), c.add(d));
-
-
-        return z0.add((z1.subtract(z0).subtract(z2)).multiply(po(N))).add(z2.multiply(po(N * 2)));
-        //    return z0 + (z1 - z0 - z2 << m) + (z2 << 2 * m);
-    }
-
-
-    private static BigNum po(int N) {
-        BigNum m = BigNum.ONE;
-
-        for (int i = 0; i < N; i++) {
-            m = m.multiply(2);
-        }
-        return m;
-
+    public BigNum modPow(BigNum secret_exp, BigNum modulus) {
+        return this.Pow(secret_exp).mod(modulus);
     }
 
 
