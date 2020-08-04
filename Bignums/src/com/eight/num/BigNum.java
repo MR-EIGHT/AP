@@ -3,6 +3,7 @@ package com.eight.num;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 
@@ -49,19 +50,6 @@ public class BigNum {
         return new BigNum((val));
     }
 
-    public static BigNum fromByte(byte[] digits) {
-        if (digits == null)
-            throw new NullPointerException();
-
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = digits.length - 1; i >= 0; i--) {
-            builder.append(digits[i]);
-        }
-
-        return BigNum.fromString(builder.toString());
-    }
-
     public static int max(int a, int b) {
         if (a >= b) return a;
         else return b;
@@ -98,60 +86,16 @@ public class BigNum {
 
     }
 
-    public static BigNum Decimalize(String n) {
-        String num = n;
-        BigNum dec_value = BigNum.ZERO;
-
-
-        BigNum base = BigNum.ONE;
-
-        int len = num.length();
-        for (int i = len - 1; i >= 0; i--) {
-            if (num.charAt(i) == '1')
-                dec_value = dec_value.add(base);
-            base = base.multiply(2);
-        }
-
-        return dec_value;
+    public static void main(String[] args) {
+        System.out.println(generatePrime(128));
     }
 
-    public static String shift(StringBuilder bits, int k) {
-        char temp;
-        int n = bits.length();
-        if (k > 0) {
-
-            for (int j = 0; j < k; j++) {
-                temp = bits.charAt(n - 1);
-                for (int i = n - 1; i > 0; i--)
-                    bits.setCharAt(i, bits.charAt(i - 1));
-                bits.setCharAt(0, temp);
-
-            }
-        }
-        if (k < 0) {
-            k = -k;
-
-            for (int j = 0; j < k; j++) {
-                temp = bits.charAt(0);
-                for (int i = 0; i < n - 1; i++)
-                    bits.setCharAt(i, bits.charAt(i + 1));
-                bits.setCharAt(n - 1, temp);
-
-            }
-        }
-
-        return bits.toString();
-    }
 
     private static BigNum power(BigNum x, BigNum y, BigNum p) {
-
         BigNum res = BigNum.ONE;
-
-
         x = x.mod(p);
 
         while (y.compareTo(BigNum.ZERO) == 1) {
-
             if (y.isOdd())
                 res = (res.multiply_Positive_fast(x)).mod(p);
 
@@ -227,53 +171,6 @@ public class BigNum {
 
     }
 
-    private static BigNum multiplyKaratsuba(BigNum x, BigNum y) {
-        int size1 = x.length();
-        int size2 = y.length();
-
-        int N = Math.max(size1, size2);
-
-        if (N < 5)
-            return x.multiply(y);
-
-
-        N = (N / 2) + (N % 2);
-
-        BigNum m = po(N);
-
-
-        BigNum b = x.divideBy(m);
-        BigNum a = x.subtract(b.multiply(m));
-        BigNum d = y.divideBy(m);
-        BigNum c = y.subtract(d.multiply(m));
-
-        BigNum z0 = multiplyKaratsuba(a, c);
-        BigNum z2 = multiplyKaratsuba(b, d);
-        BigNum z1 = multiplyKaratsuba(a.add(b), c.add(d));
-
-
-        return z0.add((z1.subtract(z0).subtract(z2)).multiply(po(N))).add(z2.multiply(po(N * 2)));
-        //    return z0 + (z1 - z0 - z2 << m) + (z2 << 2 * m);
-    }
-
-    private static BigNum po(int N) {
-        BigNum m = BigNum.ONE;
-
-        for (int i = 0; i < N; i++) {
-            m = m.multiply(2);
-        }
-        return m;
-
-    }
-
-    // }
-
-    public static void main(String[] args) {
-        //  System.out.println(generatePrime(80));
-        System.out.println(BigNum.fromString("25").binarize());
-        System.out.println(shift(BigNum.fromString("25").binarize(), -2));
-        System.out.println(Decimalize(shift(BigNum.fromString("25").binarize(), -2).toString()));
-    }
 
     public static BigNum gcd(BigNum num, BigNum second) {
 
@@ -287,8 +184,7 @@ public class BigNum {
         int negSign = 0;
         s = s.trim();
 
-        if (s.length() != 0 && s.charAt(0) == '-') signed = true;
-        else signed = false;
+        signed = s.length() != 0 && s.charAt(0) == '-';
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '-') negSign++;
         }
@@ -339,12 +235,15 @@ public class BigNum {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BigNum bigNum = (BigNum) o;
-        return Arrays.equals(digits, bigNum.digits);
+        return signed == bigNum.signed &&
+                Arrays.equals(digits, bigNum.digits);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(digits);
+        int result = Objects.hash(signed);
+        result = 31 * result + Arrays.hashCode(digits);
+        return result;
     }
 
     boolean isGreaterThan(BigNum a) {
@@ -408,9 +307,7 @@ public class BigNum {
 
 
         //  if (a.isGreaterThan(this))
-
         //throw new IllegalArgumentException("The parameter is bigger than this number");
-
         // else {
 
         for (int i = 0; i < max(length(), a.length()); i++) {
@@ -696,8 +593,7 @@ public class BigNum {
                 c = this.subtracter(a);
             else c = a.subtracter(this);
 
-            if (this.compareTo(a) == 1) c.signed = true;
-            else c.signed = false;
+            c.signed = this.compareTo(a) == 1;
             return c;
         }
 
@@ -707,8 +603,7 @@ public class BigNum {
             c = this.subtracter(a);
         else c = a.subtracter(this);
 
-        if (this.compareTo(a) == 1) c.signed = false;
-        else c.signed = true;
+        c.signed = this.compareTo(a) != 1;
         return c;
 
 
@@ -778,28 +673,6 @@ public class BigNum {
     }
 
 
-//not-practical-yet part!
-
-    private boolean devidable() {
-        int[] primeNumbersLessThan100 = {7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
-        for (int i = 0; i < primeNumbersLessThan100.length; i++) {
-            if (this.mod(BigNum.fromLong(primeNumbersLessThan100[i])).equals(BigNum.ZERO)) return true;
-        }
-        return false;
-    }
-
-    public StringBuilder binarize() {
-        StringBuilder bits = new StringBuilder();
-        BigNum localthis = this;
-        for (BigNum i = localthis; i.compareTo(BigNum.ZERO) == 1; i = i.divideBy(BigNum.fromLong(2))) {
-            bits.append(i.mod(BigNum.fromLong(2)).toString());
-
-        }
-        bits = bits.reverse();
-        return bits;
-
-    }
-
     public ArrayList<BigNum> PrimeFactors() {
         ArrayList<BigNum> primeNumbers = new ArrayList<>();
         int count = 0;
@@ -815,7 +688,6 @@ public class BigNum {
 
         if (count > 0) {
             primeNumbers.add(BigNum.fromLong(2));
-//            System.out.println("2" + " " + count);
         }
 
         for (long i = 3; i <= square; i += 2) {
@@ -826,12 +698,10 @@ public class BigNum {
             }
             if (count > 0) {
                 primeNumbers.add(BigNum.fromLong(i));
-                // System.out.println(i + " " + count);
             }
         }
         if (number > 2) {
             primeNumbers.add(BigNum.fromLong(number));
-            // System.out.println(n + " " + "1");
         }
         return primeNumbers;
     }
@@ -855,7 +725,132 @@ public class BigNum {
 
 
     public BigNum modPow(BigNum secret_exp, BigNum modulus) {
-        return this.Pow(secret_exp).mod(modulus);
+        return power(this, secret_exp, modulus);
+        //  return this.Pow(secret_exp).mod(modulus);
+    }
+
+
+    /**
+     * not-practical-yet part!
+     * not-practical-yet part!
+     * not-practical-yet part!
+     * not-practical-yet part!
+     **/
+
+
+    private boolean devidable() {
+        int[] primeNumbersLessThan100 = {7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+        for (int i = 0; i < primeNumbersLessThan100.length; i++) {
+            if (this.mod(BigNum.fromLong(primeNumbersLessThan100[i])).equals(BigNum.ZERO)) return true;
+        }
+        return false;
+    }
+
+    public StringBuilder binarize() {
+        StringBuilder bits = new StringBuilder();
+        BigNum localthis = this;
+        for (BigNum i = localthis; i.compareTo(BigNum.ZERO) == 1; i = i.divideBy(BigNum.fromLong(2))) {
+            bits.append(i.mod(BigNum.fromLong(2)).toString());
+
+        }
+        bits = bits.reverse();
+        return bits;
+
+    }
+
+    private static BigNum multiplyKaratsuba(BigNum x, BigNum y) {
+        int size1 = x.length();
+        int size2 = y.length();
+
+        int N = Math.max(size1, size2);
+
+        if (N < 5)
+            return x.multiply(y);
+
+
+        N = (N / 2) + (N % 2);
+
+        BigNum m = po(N);
+
+
+        BigNum b = x.divideBy(m);
+        BigNum a = x.subtract(b.multiply(m));
+        BigNum d = y.divideBy(m);
+        BigNum c = y.subtract(d.multiply(m));
+
+        BigNum z0 = multiplyKaratsuba(a, c);
+        BigNum z2 = multiplyKaratsuba(b, d);
+        BigNum z1 = multiplyKaratsuba(a.add(b), c.add(d));
+
+
+        return z0.add((z1.subtract(z0).subtract(z2)).multiply(po(N))).add(z2.multiply(po(N * 2)));
+        //    return z0 + (z1 - z0 - z2 << m) + (z2 << 2 * m);
+    }
+
+    private static BigNum po(int N) {
+        BigNum m = BigNum.ONE;
+
+        for (int i = 0; i < N; i++) {
+            m = m.multiply(2);
+        }
+        return m;
+
+    }
+
+    public static BigNum Decimalize(String n) {
+        String num = n;
+        BigNum dec_value = BigNum.ZERO;
+        BigNum base = BigNum.ONE;
+        int len = num.length();
+        for (int i = len - 1; i >= 0; i--) {
+            if (num.charAt(i) == '1')
+                dec_value = dec_value.add(base);
+            base = base.multiply(2);
+        }
+
+        return dec_value;
+    }
+
+    public static String shift(StringBuilder bits, int k) {
+        char temp;
+        int n = bits.length();
+        if (k > 0) {
+
+            for (int j = 0; j < k; j++) {
+                temp = bits.charAt(n - 1);
+                for (int i = n - 1; i > 0; i--)
+                    bits.setCharAt(i, bits.charAt(i - 1));
+                bits.setCharAt(0, temp);
+
+            }
+        }
+        if (k < 0) {
+            k = -k;
+
+            for (int j = 0; j < k; j++) {
+                temp = bits.charAt(0);
+                for (int i = 0; i < n - 1; i++)
+                    bits.setCharAt(i, bits.charAt(i + 1));
+                bits.setCharAt(n - 1, temp);
+
+            }
+        }
+
+        return bits.toString();
+    }
+
+
+    public static BigNum fromByte(byte[] digits) {
+        if (digits == null)
+            throw new NullPointerException();
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = digits.length - 1; i >= 0; i--) {
+            builder.append(digits[i]);
+        }
+
+        return BigNum.fromString(builder.toString());
     }
 
 

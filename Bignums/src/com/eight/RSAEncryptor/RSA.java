@@ -1,6 +1,5 @@
 package com.eight.RSAEncryptor;
 
-
 import com.eight.num.BigNum;
 
 import java.io.*;
@@ -37,9 +36,7 @@ public class RSA {
         while (bis.available() > 0) {
             int NumberD = bis.read();
             s = Integer.toString(NumberD);
-
             BigNum Text = BigNum.fromString(s);
-
             BigNum encrypt = key.encrypt(Text);
             encryptedArr.add(encrypt);
 
@@ -90,20 +87,18 @@ public class RSA {
     }
 
     public static void main(String[] args) throws IOException {
-        int N = 4;
+        int N = 6;
         RSA key = new RSA(N);
         System.out.println(key);
         key.print();
-
-
         encrypt(key);
         decrypt(key);
     }
 
-    private void print(){
-        System.out.println("modulus: "+modulus);
-        System.out.println("publicKey: "+publicKey);
-        System.out.println("privateKey: "+privateKey);
+    private void print() {
+        System.out.println("modulus: " + modulus);
+        System.out.println("publicKey: " + publicKey);
+        System.out.println("privateKey: " + privateKey);
     }
 
     BigNum encrypt(BigNum message) {
